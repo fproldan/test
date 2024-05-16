@@ -8,6 +8,6 @@ jobs:
     name: Track Overrides
     steps:
       - name:  Track Overrides
-        uses: diamorafaela/track-overrides@master
+        uses: diamorafaela/track-overrides@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
