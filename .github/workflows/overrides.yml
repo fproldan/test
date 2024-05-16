@@ -1,0 +1,13 @@
+name: Overrides
+on:
+  pull_request:
+
+jobs:
+  overrides:
+    runs-on: ubuntu-20.04
+    name: Track Overrides
+    steps:
+      - name:  Track Overrides
+        uses: diamorafaela/track-overrides@v0.0.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
