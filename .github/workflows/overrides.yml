@@ -10,4 +10,4 @@ jobs:
       - name:  Track Overrides
         uses: diamorafaela/track-overrides@main
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          directory: ${{ github.workspace }}
