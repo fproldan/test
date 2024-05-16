@@ -13,5 +13,4 @@ jobs:
       - name:  Track Overrides
         uses: diamorafaela/track-overrides@main
         with:
-          python-path: 'track_overrides.py'
-          directory: ${{ github.workspace }}
+          directory: 'src'
