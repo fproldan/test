@@ -7,7 +7,11 @@ jobs:
     runs-on: ubuntu-20.04
     name: Track Overrides
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name:  Track Overrides
         uses: diamorafaela/track-overrides@main
         with:
+          python-path: 'track_overrides.py'
           directory: ${{ github.workspace }}
