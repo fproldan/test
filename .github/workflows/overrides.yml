@@ -4,7 +4,7 @@ on:
 
 jobs:
   overrides:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     name: Track Overrides
     steps:
       - name: Checkout repository
@@ -13,4 +13,4 @@ jobs:
       - name:  Track Overrides
         uses: diamorafaela/track-overrides@main
         with:
-          directory: 'src'
+          directory: ${{ github.workspace }})
