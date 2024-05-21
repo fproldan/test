@@ -13,7 +13,7 @@ class CustomUser(User):
 		"""		
 		print("Custom code")
 		return frappe.db.get_value("Role", {"name": "System Manager"}, ["disabled"])
-	
+
 
 	def validate_user_image(self):
 		"""
@@ -22,6 +22,7 @@ class CustomUser(User):
 		PATH: frappe/core/doctype/user/user.py
 		METHOD: validate_user_image
 		"""	
+		print("Custom code")
 		if self.user_image and len(self.user_image) > 2000:
 			frappe.throw(_("Not a valid User Image."))
 
