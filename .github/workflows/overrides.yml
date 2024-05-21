@@ -13,4 +13,5 @@ jobs:
       - name:  Track Overrides
         uses: diamorafaela/track-overrides@main
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           directory: ${{ github.workspace }})
