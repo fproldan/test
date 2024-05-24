@@ -25,6 +25,7 @@ class CustomUser(User):
 		if self.user_image and len(self.user_image) > 2000:
 			frappe.throw(_("Not a valid User Image."))
 
+
 	def set_full_name(self):
 		"""
 		HASH: 0dee65cbe96beed05ba234e6614d9e91a3ed1894
