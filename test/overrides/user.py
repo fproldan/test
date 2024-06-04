@@ -14,7 +14,6 @@ class CustomUser(User):
 		print("Custom code")
 		return frappe.db.get_value("Role", {"name": "System Manager"}, ["disabled"])
 	
-
 	def validate_user_image(self):
 		"""
 		HASH: 0dee65cbe96beed05ba234e6614d9e91a3ed1894
