@@ -6,7 +6,7 @@ class CustomUser(User):
 
 	def is_system_manager_disabled(self):
 		"""
-		HASH: 171e1d0159cda3b8d9415527590c9c3ca0c827be
+		HASH: c157564281a786fba0835fd58310947074e56772
 		REPO: https://github.com/frappe/frappe/
 		PATH: frappe/core/doctype/user/user.py
 		METHOD: is_system_manager_disabled
@@ -17,7 +17,7 @@ class CustomUser(User):
 	
 	def validate_user_image(self):
 		"""
-		HASH: 0dee65cbe96beed05ba234e6614d9e91a3ed1894
+		HASH: d00b20a610b9d04ddefb9ab5eb8c406c7fa0e6d3
 		REPO: https://github.com/frappe/frappe/
 		PATH: frappe/core/doctype/user/user.py
 		METHOD: validate_user_image
@@ -27,12 +27,18 @@ class CustomUser(User):
 
 	def set_full_name(self):
 		"""
-		HASH: 0dee65cbe96beed05ba234e6614d9e91a3ed1894
+		HASH: ef2687768991f7677a349cacd967c77ca3935c68
 		REPO: https://github.com/frappe/frappe/
 		PATH: frappe/core/doctype/user/user.py
 		METHOD: set_full_name
 		"""	
 		self.full_name = " ".join(filter(None, [self.first_name, self.last_name]))
 
-
-	
+	def ensure_unique_roles(self):
+		"""
+		HASH: 6e7e641a3a579631dd3f5d30c8784ca9daed30b1
+		REPO: https://github.com/frappe/frappe/
+		PATH: frappe/core/doctype/user/user.py
+		METHOD: ensure_unique_roles
+		"""	
+		pass
