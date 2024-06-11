@@ -14,4 +14,4 @@ jobs:
         uses: diamorafaela/track-overrides-test@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          post-comment: false
+          post-comment: true
