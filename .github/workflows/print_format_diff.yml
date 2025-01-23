@@ -65,3 +65,4 @@ jobs:
               "https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments"
           else
             echo "No diffs to comment."
+          fi
