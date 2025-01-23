@@ -50,18 +50,20 @@ jobs:
           else
             echo "No print format changes detected."
             exit 0
-          fi
+          fi  # Close the 'if' statement here
 
       - name: Comment diff on PR
         if: always()
         run: |
           if [ -f print_format_diff.txt ]; then
             COMMENT_BODY=$(<print_format_diff.txt)
-            PR_NUMBER=${{ github.event.pull_request.number }}
+            ESCAPED_COMMENT=$(echo "$COMMENT_BODY" | jq -R -s '.')
 
+            PR_NUMBER=${{ github.event.pull_request.number }}
+            
             curl -s -X POST \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -d '{"body": "### Print Format Changes Diff\n\n```diff\n'"$COMMENT_BODY"'\n```"}' \
+              -d '{"body": '"$ESCAPED_COMMENT"'}' \
               "https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments"
           else
             echo "No diffs to comment."
