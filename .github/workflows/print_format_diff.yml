@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch the full history to avoid "bad object" error
 
       - name: Install dependencies
         run: |
@@ -19,6 +21,9 @@ jobs:
       - name: Generate diff for print formats
         id: generate-diff
         run: |
+          # Fetch all commits to ensure we're working with full commit history
+          git fetch --prune --unshallow
+
           # List all the changed print format files in the PR
           print_format_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep 'print_format/.*\.json')
           
