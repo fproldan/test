@@ -10,8 +10,6 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Install dependencies
         run: |
@@ -30,6 +28,9 @@ jobs:
             echo "Found changes in print format files:"
             cat changed_files.txt
             
+            # Prepare formatted output
+            echo "### Print Format Changes Diff" > print_format_diff.txt
+
             # Generate diffs for the 'html' key in each JSON file
             while IFS= read -r file; do
               echo "Processing $file"
@@ -39,12 +40,13 @@ jobs:
               new_html=$(cat $file | jq -r '.html' || echo "")
               
               # Output the diff
-              diff_output=$(diff <(echo "$old_html") <(echo "$new_html") || true)
+              diff_output=$(diff -u <(echo "$old_html") <(echo "$new_html") || true)
               
               if [ -n "$diff_output" ]; then
-                echo "Diff for $file:" >> print_format_diff.txt
+                echo "\n**Diff for $file:**" >> print_format_diff.txt
+                echo '```diff' >> print_format_diff.txt
                 echo "$diff_output" >> print_format_diff.txt
-                echo "" >> print_format_diff.txt
+                echo '```' >> print_format_diff.txt
               fi
             done < changed_files.txt
           else
