@@ -1,0 +1,59 @@
+name: Diff Print Formats
+
+on:
+  pull_request:
+    paths:
+      - 'print_format/**/*.json'
+
+jobs:
+  render_diff:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq diffutils
+
+      - name: Generate diff for print formats
+        id: generate-diff
+        run: |
+          # List all the changed print format files in the PR
+          print_format_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'print_format/.*\.json')
+          
+          # Check if there are any print format changes
+          if [ -n "$print_format_files" ]; then
+            echo "Changed files: $print_format_files"
+            
+            # Extract diffs for the 'html' field from each JSON file
+            for file in $print_format_files; do
+              echo "Processing $file"
+              
+              # Extract old and new 'html' values using jq (for easy diffing)
+              old_html=$(git show ${{ github.event.before }}:$file | jq -r '.html')
+              new_html=$(git show ${{ github.sha }}:$file | jq -r '.html')
+              
+              # Output the diff for the 'html' field
+              diff_output=$(diff <(echo "$old_html") <(echo "$new_html"))
+              
+              # Save the diff to an output file for PR comment
+              echo "$diff_output" >> print_format_diff.txt
+            done
+          else
+            echo "No print format changes detected."
+            exit 0
+          
+      - name: Comment diff on PR
+        if: steps.generate-diff.outputs.diff != ''
+        run: |
+          COMMENT_BODY=$(<print_format_diff.txt)
+          PR_NUMBER=$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)
+
+          # Post the diff as a comment on the PR
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d '{"body": "### Print Format Changes Diff\n\n```diff\n'$COMMENT_BODY'\n```"}' \
+            "https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments"
