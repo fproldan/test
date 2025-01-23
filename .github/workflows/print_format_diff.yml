@@ -20,7 +20,7 @@ jobs:
         id: generate-diff
         run: |
           # List all the changed print format files in the PR
-          print_format_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'print_format/.*\.json')
+          print_format_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep 'print_format/.*\.json')
           
           # Check if there are any print format changes
           if [ -n "$print_format_files" ]; then
@@ -31,7 +31,7 @@ jobs:
               echo "Processing $file"
               
               # Extract old and new 'html' values using jq (for easy diffing)
-              old_html=$(git show ${{ github.event.before }}:$file | jq -r '.html')
+              old_html=$(git show ${{ github.event.pull_request.base.sha }}:$file | jq -r '.html')
               new_html=$(git show ${{ github.sha }}:$file | jq -r '.html')
               
               # Output the diff for the 'html' field
