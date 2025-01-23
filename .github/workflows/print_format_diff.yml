@@ -11,7 +11,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch the full history to avoid "bad object" error
+          fetch-depth: 0
 
       - name: Install dependencies
         run: |
@@ -21,42 +21,47 @@ jobs:
       - name: Generate diff for print formats
         id: generate-diff
         run: |
-          # Fetch all commits to ensure we're working with full commit history
-          git fetch --prune --unshallow
+          # Compare the current PR's code with the base branch
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          git diff origin/${{ github.event.pull_request.base.ref }}...HEAD --name-only | grep 'print_format/.*\.json' > changed_files.txt
 
-          # List all the changed print format files in the PR
-          print_format_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep 'print_format/.*\.json')
-          
-          # Check if there are any print format changes
-          if [ -n "$print_format_files" ]; then
-            echo "Changed files: $print_format_files"
+          # Check if there are changes
+          if [ -s changed_files.txt ]; then
+            echo "Found changes in print format files:"
+            cat changed_files.txt
             
-            # Extract diffs for the 'html' field from each JSON file
-            for file in $print_format_files; do
+            # Generate diffs for the 'html' key in each JSON file
+            while IFS= read -r file; do
               echo "Processing $file"
+
+              # Extract old and new 'html' values using jq
+              old_html=$(git show origin/${{ github.event.pull_request.base.ref }}:$file | jq -r '.html' || echo "")
+              new_html=$(cat $file | jq -r '.html' || echo "")
               
-              # Extract old and new 'html' values using jq (for easy diffing)
-              old_html=$(git show ${{ github.event.pull_request.base.sha }}:$file | jq -r '.html')
-              new_html=$(git show ${{ github.sha }}:$file | jq -r '.html')
+              # Output the diff
+              diff_output=$(diff <(echo "$old_html") <(echo "$new_html") || true)
               
-              # Output the diff for the 'html' field
-              diff_output=$(diff <(echo "$old_html") <(echo "$new_html"))
-              
-              # Save the diff to an output file for PR comment
-              echo "$diff_output" >> print_format_diff.txt
-            done
+              if [ -n "$diff_output" ]; then
+                echo "Diff for $file:" >> print_format_diff.txt
+                echo "$diff_output" >> print_format_diff.txt
+                echo "" >> print_format_diff.txt
+              fi
+            done < changed_files.txt
           else
             echo "No print format changes detected."
             exit 0
-          
-      - name: Comment diff on PR
-        if: steps.generate-diff.outputs.diff != ''
-        run: |
-          COMMENT_BODY=$(<print_format_diff.txt)
-          PR_NUMBER=$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)
+          fi
 
-          # Post the diff as a comment on the PR
-          curl -s -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -d '{"body": "### Print Format Changes Diff\n\n```diff\n'$COMMENT_BODY'\n```"}' \
-            "https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments"
+      - name: Comment diff on PR
+        if: always()
+        run: |
+          if [ -f print_format_diff.txt ]; then
+            COMMENT_BODY=$(<print_format_diff.txt)
+            PR_NUMBER=${{ github.event.pull_request.number }}
+
+            curl -s -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -d '{"body": "### Print Format Changes Diff\n\n```diff\n'"$COMMENT_BODY"'\n```"}' \
+              "https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments"
+          else
+            echo "No diffs to comment."
