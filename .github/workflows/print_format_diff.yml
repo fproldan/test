@@ -2,8 +2,6 @@ name: Diff Print Formats
 
 on:
   pull_request:
-    paths:
-      - 'print_format/**/*.json'
 
 jobs:
   render_diff:
