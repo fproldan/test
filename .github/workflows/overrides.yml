@@ -18,7 +18,7 @@ jobs:
           path: test_utils
 
       - name: List contents of test_utils
-        run: ls -R test_utils
+        run: ls -R test_utils/.github/actions
 
       - name:  Track Overrides
         uses: ./test_utils/.github/actions/track_overrides
