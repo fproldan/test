@@ -18,7 +18,7 @@ jobs:
           path: test_utils
 
       - name:  Track Overrides
-        uses: ./test_utils/.github/actions/track-overrides
+        uses: ./test_utils/.github/actions/track_overrides
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           post-comment: true
