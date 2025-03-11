@@ -11,7 +11,7 @@ class CustomUser(User):
 		PATH: frappe/core/doctype/user/user.py
 		METHOD: is_system_manager_disabled
 		"""
-		print("hi")
+		print("hi2")
 		print("Custom code")
 		return frappe.db.get_value("Role", {"name": "System Manager"}, ["disabled"])
 	
