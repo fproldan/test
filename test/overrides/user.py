@@ -10,7 +10,8 @@ class CustomUser(User):
 		REPO: https://github.com/frappe/frappe/
 		PATH: frappe/core/doctype/user/user.py
 		METHOD: is_system_manager_disabled
-		"""		
+		"""
+		print("hi2")
 		print("Custom code")
 		return frappe.db.get_value("Role", {"name": "System Manager"}, ["disabled"])
 	
